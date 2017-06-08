@@ -22,7 +22,7 @@ namespace ServerApplication
         {
             using (var context = new DatabaseContext())
             {
-                if(context.Users.Any(x => x.UserName == username))
+                if (context.Users.Any(x => x.UserName == username))
                 {
                     return null;
                 }
@@ -76,6 +76,20 @@ namespace ServerApplication
                         Amount = x.Sum(a => a.Amount)
                     })
                     .ToList();
+            }
+        }
+
+        public UserDto GetBalance(string username)
+        {
+            using (var context = new DatabaseContext())
+            {
+                return context
+                   .Users
+                   .Single(x => x.UserName == username)
+                   .Select(x => new UserDto
+                   {
+                       Balance = x.User.Balance
+                   });
             }
         }
     }

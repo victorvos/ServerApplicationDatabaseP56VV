@@ -132,6 +132,7 @@
       <DependentUpon>Service.svc</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Models\UserDto.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

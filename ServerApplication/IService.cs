@@ -18,5 +18,8 @@ namespace ServerApplication
 
         [OperationContract]
         List<OrderDto> GetInventory(string username);
+
+        [OperationContract]
+        UserDto GetBalance(string username);
     }
 }
