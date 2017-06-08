@@ -79,17 +79,64 @@ namespace ServerApplication
             }
         }
 
+        public void BuyProduct(long user_Id, long product_Id)
+        {
+            using (var context = new DatabaseContext())
+            {
+                // Update InventoryItems Set Amount -= 1 Where Product_Id == product_Id
+                // Update Orders Set Amount += 1 Where Product_Id == product_Id AND User_Id = user_Id
+                var inventoryItem = context.InventoryItem.Find(product_Id);
+                inventoryItem.Amount = inventoryItem.Amount - 1;
+
+                var OrderItem = context.Orders.Where(p => p.Product.Id == product_Id && p.User.Id == user_Id).FirstOrDefault();
+                OrderItem.Amount = OrderItem.Amount + 1;
+
+                context.SaveChanges();
+            }
+        }
+
+        public UserDto GetUserID(string username)
+        {
+            using (var context = new DatabaseContext())
+            {
+                var user = context
+                    .Users
+                    .First(x => x.UserName == username);
+
+                return new UserDto
+                {
+                    UserID = user.Id
+                };
+            }
+        }
+
+        public ProductDto GetProductID(string productName)
+        {
+            using (var context = new DatabaseContext())
+            {
+                var product = context
+                    .Producten
+                    .First(x => x.Name == productName);
+
+                return new ProductDto
+                {
+                    Name = product.Name
+                };
+            }
+        }
+
         public UserDto GetBalance(string username)
         {
             using (var context = new DatabaseContext())
             {
-                return context
-                   .Users
-                   .Single(x => x.UserName == username)
-                   .Select(x => new UserDto
-                   {
-                       Balance = x.User.Balance
-                   });
+                var user = context
+                    .Users
+                    .First(x => x.UserName == username);
+
+                return new UserDto
+                {
+                    Balance = user.Balance
+                };
             }
         }
     }

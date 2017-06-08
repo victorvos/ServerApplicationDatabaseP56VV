@@ -20,6 +20,15 @@ namespace ServerApplication
         List<OrderDto> GetInventory(string username);
 
         [OperationContract]
+        void BuyProduct(long user_Id, long product_Id);
+
+        [OperationContract]
         UserDto GetBalance(string username);
+
+        [OperationContract]
+        UserDto GetUserID(string username);
+
+        [OperationContract]
+        ProductDto GetProductID(string productName);
     }
 }
