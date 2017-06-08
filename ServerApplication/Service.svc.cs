@@ -85,10 +85,15 @@ namespace ServerApplication
             {
                 // Update InventoryItems Set Amount -= 1 Where Product_Id == product_Id
                 // Update Orders Set Amount += 1 Where Product_Id == product_Id AND User_Id = user_Id
-                var inventoryItem = context.InventoryItem.Find(product_Id);
+                var inventoryItem = context.InventoryItem.Where(i => i.Product.Id == product_Id).Single();
                 inventoryItem.Amount = inventoryItem.Amount - 1;
 
-                var OrderItem = context.Orders.Where(p => p.Product.Id == product_Id && p.User.Id == user_Id).FirstOrDefault();
+                var OrderItem = context.Orders.Add(new Order
+                {
+                    User = GetUser(user_Id),
+                    Product = GetProduct(product_Id)
+                 
+                });
                 OrderItem.Amount = OrderItem.Amount + 1;
 
                 context.SaveChanges();
@@ -120,7 +125,42 @@ namespace ServerApplication
 
                 return new ProductDto
                 {
-                    Name = product.Name
+                    ProductID = product.Id
+                };
+            }
+        }
+        public User GetUser(long user_Id)
+        {
+            using (var context = new DatabaseContext())
+            {
+                var user = context
+                    .Users
+                    .First(x => x.Id == user_Id);
+
+                return new User
+                {
+                    Balance = user.Balance,
+                    Id = user.Id,
+                    Orders = user.Orders,
+                    Password = user.Password,
+                    UserName = user.UserName
+                };
+            }
+        }
+
+        public Product GetProduct(long product_Id)
+        {
+            using (var context = new DatabaseContext())
+            {
+                var product = context
+                    .Producten
+                    .First(x => x.Id == product_Id);
+
+                return new Product
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Price = product.Price
                 };
             }
         }
