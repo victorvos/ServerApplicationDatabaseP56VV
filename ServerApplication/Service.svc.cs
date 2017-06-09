@@ -79,22 +79,34 @@ namespace ServerApplication
             }
         }
 
-        public void BuyProduct(long user_Id, long product_Id)
+        public void BuyProduct(long userId, long productId, int amount)
         {
             using (var context = new DatabaseContext())
             {
-                // Update InventoryItems Set Amount -= 1 Where Product_Id == product_Id
-                // Update Orders Set Amount += 1 Where Product_Id == product_Id AND User_Id = user_Id
-                var inventoryItem = context.InventoryItem.Where(i => i.Product.Id == product_Id).Single();
-                inventoryItem.Amount = inventoryItem.Amount - 1;
+                var inventoryItem = context
+                    .InventoryItem
+                    .FirstOrDefault(i => i.Product.Id == productId);
 
-                var OrderItem = context.Orders.Add(new Order
+                if (inventoryItem == null || inventoryItem.Amount < amount)
                 {
-                    User = GetUser(user_Id),
-                    Product = GetProduct(product_Id)
-                 
+                    throw new Exception("Product is not available or out of stock");
+                }
+
+                inventoryItem.Amount = inventoryItem.Amount - amount;
+
+                var user = context.Users.Single(x => x.Id == userId);
+                var product = context.Producten.Single(x => x.Id == productId);
+                var totalPrice = product.Price * amount;
+
+                context.Orders.Add(new Order
+                {
+                    User = user,
+                    Product = product,
+                    Amount = amount,
+                    TotalPrice = totalPrice
                 });
-                OrderItem.Amount = OrderItem.Amount + 1;
+
+                SetBalance(user.UserName, totalPrice);
 
                 context.SaveChanges();
             }
@@ -177,6 +189,20 @@ namespace ServerApplication
                 {
                     Balance = user.Balance
                 };
+            }
+        }
+
+        public void SetBalance(string username, int totalPrice)
+        {
+            using (var context = new DatabaseContext())
+            {
+                var user = context
+                    .Users
+                    .First(x => x.UserName == username);
+
+                user.Balance -= totalPrice;
+
+                context.SaveChanges();
             }
         }
     }

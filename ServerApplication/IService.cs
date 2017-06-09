@@ -20,7 +20,7 @@ namespace ServerApplication
         List<OrderDto> GetInventory(string username);
 
         [OperationContract]
-        void BuyProduct(long user_Id, long product_Id);
+        void BuyProduct(long user_Id, long product_Id, int amount);
 
         [OperationContract]
         UserDto GetBalance(string username);
