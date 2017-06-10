@@ -1,6 +1,8 @@
-﻿using ServerApplication.Models;
+﻿using ServerApplication.Database;
+using ServerApplication.Models;
 using System.Collections.Generic;
 using System.ServiceModel;
+
 
 namespace ServerApplication
 {
@@ -30,5 +32,8 @@ namespace ServerApplication
 
         [OperationContract]
         ProductDto GetProductID(string productName);
+
+        [OperationContract]
+        Product GetProduct(long productID);
     }
 }
